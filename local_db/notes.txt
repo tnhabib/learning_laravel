@@ -1,0 +1,2 @@
+### set up database container
+docker run -p 3306:3306 --name local-mysql -e MYSQL_ROOT_PASSWORD=rootpw -d mysql:5.7.27

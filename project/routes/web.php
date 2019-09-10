@@ -11,7 +11,17 @@
 |
 */
 
-Route::get('/', function () {
+use Illuminate\Filesystem\Filesystem;
+use App\Services\Twitter;
+
+// app()->singleton('App\Services\Twitter', function() {
+//   // dd('called');
+//   return new \App\Services\Twitter('asfas');
+
+// });
+
+Route::get('/', function (Twitter $twitter) {
+    
     return view('welcome');
 });
 
@@ -50,3 +60,7 @@ Route::delete('/completed-tasks/{task}', 'CompletedTasksController@destroy');
   DELETE /projects/2 (destroy)
 
 */
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');

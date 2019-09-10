@@ -33,5 +33,10 @@ return [
     'sparkpost' => [
         'secret' => env('SPARKPOST_SECRET'),
     ],
+    
+    'twitter' => [
+        'key' => env('TWITTER_KEY'),
+        'secret' => env('TWITTER_SECRET')
+    ]
 
 ];

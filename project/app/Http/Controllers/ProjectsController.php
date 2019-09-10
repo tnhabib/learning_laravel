@@ -3,15 +3,35 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Filesystem\Filesystem;
+
 
 use App\Project;
+use App\Services\Twitter;
+
 
 class ProjectsController extends Controller
 {
     //
+    public function __construct() 
+    {
+        // this middleware will apply to all functions in the controller
+        $this->middleware('auth');
+
+        // below examples to control which functions are handled by auth middleware
+        // $this->middleware('auth')->only(['index']);
+        // $this->middleware('auth')->except(['show']);
+
+    }
     public function index() 
     {
-        $projects =  Project::all();
+        auth()->id(); // returns user id
+        auth()->user(); // returns user instance
+        auth()->check(); // return boolean describe whether user is signed in
+        auth()->guest(); // is the user a guest?
+
+        // $projects =  Project::all();
+        $projects =  Project::where('owner_id', auth()->id())->get();
 
         return view('projects.index', ['projects' => $projects] );
     }
@@ -21,12 +41,13 @@ class ProjectsController extends Controller
         return view('projects.create');
     }
 
-    public function show(Project $project) 
+    public function show(Project $project, Twitter $twitter) 
     {
         // replaced by route model binding in parameter
         //$project  = Project::findOrFail($id);
-     
+        //$twitter = app('twitter');
         
+        // dd($twitter);
 
         return view('projects.show', compact('project'));
 
@@ -72,6 +93,7 @@ class ProjectsController extends Controller
                 ]
             );
 
+        $attributes['owner_id'] = auth()->id();
         Project::create( $attributes );
 
         // $project = new Project();

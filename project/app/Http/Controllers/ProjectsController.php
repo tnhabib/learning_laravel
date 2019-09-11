@@ -41,13 +41,21 @@ class ProjectsController extends Controller
         return view('projects.create');
     }
 
-    public function show(Project $project, Twitter $twitter) 
+    public function show(Project $project) 
     {
         // replaced by route model binding in parameter
         //$project  = Project::findOrFail($id);
         //$twitter = app('twitter');
         
         // dd($twitter);
+        // abort_if();
+        // abort_unless();
+        // \Gate::allows();
+        // abort_if (\Gate::denies('update', $project), 403);
+        // abort_unless (\Gate::allows('update', $project), 403);
+        // auth()->user()->can('update', $project);
+
+        $this->authorize('update', $project);
 
         return view('projects.show', compact('project'));
 
@@ -63,6 +71,7 @@ class ProjectsController extends Controller
     public function update(Project $project) 
     {
         //$project = Project::findOrFail($id);
+        $this->authorize('update', $project);
 
         $project->update(request(['title', 'description']));
 

@@ -115,7 +115,7 @@ class ProjectsController extends Controller
         // redirects back to same page if validation fails,
         // also returns validated attributes
         $attributes = $this->validateProject();
-        
+
         $attributes['owner_id'] = auth()->id();
         $project = Project::create( $attributes );
 
@@ -124,7 +124,7 @@ class ProjectsController extends Controller
         // $project->description = request('description');
 
         // $project->save();
-        \Mail::to('tnhabib@gmai.com')->send(
+        \Mail::to($project->owner->email)->send(
             new ProjectCreated($project )
         );
 

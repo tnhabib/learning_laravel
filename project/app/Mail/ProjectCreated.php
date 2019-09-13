@@ -11,6 +11,7 @@ class ProjectCreated extends Mailable
 {
     use Queueable, SerializesModels;
 
+     // public properties are accesible in the markdown view referenced below
     public $project;
 
     /**

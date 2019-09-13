@@ -32,7 +32,10 @@ class ProjectsController extends Controller
         // auth()->guest(); // is the user a guest?
 
         // $projects =  Project::all();
-        $projects =  Project::where('owner_id', auth()->id())->get();
+
+        $projects = auth()->user()->projects;
+
+        // $projects =  Project::where('owner_id', auth()->id())->get();
 
         cache()->rememberForever('stats', function(){
             return ['lessons' => 1300, 'hours' => '50000', 'series' => 100];
@@ -74,12 +77,22 @@ class ProjectsController extends Controller
         return view('projects.edit', compact('project'));
     }
 
+    public function validateProject() 
+    {
+        return request()->validate(
+            [
+            'title' => ['required', 'min:3'],
+            'description' => ['required', 'min:3']
+            ]
+        );
+    }
     public function update(Project $project) 
     {
+        
         //$project = Project::findOrFail($id);
         $this->authorize('update', $project);
 
-        $project->update(request(['title', 'description']));
+        $project->update($this->validateProject());
 
         // $project->title = request('title');
         // $project->description = request('description');
@@ -101,13 +114,8 @@ class ProjectsController extends Controller
     {
         // redirects back to same page if validation fails,
         // also returns validated attributes
-        $attributes = request()->validate(
-                [
-                'title' => ['required', 'min:3'],
-                'description' => ['required', 'min:3']
-                ]
-            );
-
+        $attributes = $this->validateProject();
+        
         $attributes['owner_id'] = auth()->id();
         $project = Project::create( $attributes );
 
@@ -117,7 +125,7 @@ class ProjectsController extends Controller
 
         // $project->save();
         \Mail::to('tnhabib@gmai.com')->send(
-            new ProjectCreated($project)
+            new ProjectCreated($project )
         );
 
         return redirect('/projects');

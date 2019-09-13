@@ -8,6 +8,7 @@ use Illuminate\Filesystem\Filesystem;
 
 use App\Project;
 use App\Services\Twitter;
+use App\Mail\ProjectCreated;
 
 
 class ProjectsController extends Controller
@@ -25,13 +26,18 @@ class ProjectsController extends Controller
     }
     public function index() 
     {
-        auth()->id(); // returns user id
-        auth()->user(); // returns user instance
-        auth()->check(); // return boolean describe whether user is signed in
-        auth()->guest(); // is the user a guest?
+        // auth()->id(); // returns user id
+        // auth()->user(); // returns user instance
+        // auth()->check(); // return boolean describe whether user is signed in
+        // auth()->guest(); // is the user a guest?
 
         // $projects =  Project::all();
         $projects =  Project::where('owner_id', auth()->id())->get();
+
+        cache()->rememberForever('stats', function(){
+            return ['lessons' => 1300, 'hours' => '50000', 'series' => 100];
+            
+        });
 
         return view('projects.index', ['projects' => $projects] );
     }
@@ -103,13 +109,16 @@ class ProjectsController extends Controller
             );
 
         $attributes['owner_id'] = auth()->id();
-        Project::create( $attributes );
+        $project = Project::create( $attributes );
 
         // $project = new Project();
         // $project->title = request('title');
         // $project->description = request('description');
 
         // $project->save();
+        \Mail::to('tnhabib@gmai.com')->send(
+            new ProjectCreated($project)
+        );
 
         return redirect('/projects');
 
